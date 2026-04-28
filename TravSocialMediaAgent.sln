@@ -1,0 +1,42 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravSocialMediaAgent.Api", "TravSocialMediaAgent.Api\TravSocialMediaAgent.Api.csproj", "{2B5D3057-4F8A-4A91-9E6C-64CC0542DE64}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravSocialMediaAgent.Application", "TravSocialMediaAgent.Application\TravSocialMediaAgent.Application.csproj", "{7F1E6D28-04FE-4B24-94C8-01108EFD60B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravSocialMediaAgent.Domain", "TravSocialMediaAgent.Domain\TravSocialMediaAgent.Domain.csproj", "{C1118BC0-2734-46AB-B6FD-432B0D55E8EE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravSocialMediaAgent.Infrastructure", "TravSocialMediaAgent.Infrastructure\TravSocialMediaAgent.Infrastructure.csproj", "{C442AD2B-A112-44D1-986D-49D6E9FDE84F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B5D3057-4F8A-4A91-9E6C-64CC0542DE64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B5D3057-4F8A-4A91-9E6C-64CC0542DE64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B5D3057-4F8A-4A91-9E6C-64CC0542DE64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B5D3057-4F8A-4A91-9E6C-64CC0542DE64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F1E6D28-04FE-4B24-94C8-01108EFD60B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F1E6D28-04FE-4B24-94C8-01108EFD60B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F1E6D28-04FE-4B24-94C8-01108EFD60B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F1E6D28-04FE-4B24-94C8-01108EFD60B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1118BC0-2734-46AB-B6FD-432B0D55E8EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1118BC0-2734-46AB-B6FD-432B0D55E8EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1118BC0-2734-46AB-B6FD-432B0D55E8EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1118BC0-2734-46AB-B6FD-432B0D55E8EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C442AD2B-A112-44D1-986D-49D6E9FDE84F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C442AD2B-A112-44D1-986D-49D6E9FDE84F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C442AD2B-A112-44D1-986D-49D6E9FDE84F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C442AD2B-A112-44D1-986D-49D6E9FDE84F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6C6F9A27-3662-41E5-A472-721FE6B64B5A}
+	EndGlobalSection
+EndGlobal
