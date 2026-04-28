@@ -23,6 +23,13 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# IDE/user-local files
+.vs/
+.vscode/.vs/
+*.user
+*.suo
+*.rsuser
+
 # .NET Core
 project.lock.json
 project.fragment.lock.json
@@ -38,6 +45,10 @@ ScaffoldingReadMe.txt
 
 # dotenv environment variables file
 .env
+.env.*
+*.local.json
+appsettings.Development.json
+appsettings.Local.json
 
 # Others
 ~$*
