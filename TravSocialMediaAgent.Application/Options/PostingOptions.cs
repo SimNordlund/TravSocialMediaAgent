@@ -22,12 +22,7 @@ public sealed class PostingOptions
 
     public int MaxCharacters { get; set; } = 500;
 
-    public string[] OptionalHashtags { get; set; } =
-    [
-        "#trav",
-        "#travtips",
-        "#Travanalys"
-    ];
+    public string[] OptionalHashtags { get; set; } = ["#trav", "#travtips", "#Travanalys"];
 
     public string[] ContentAngles { get; set; } =
     [
@@ -35,7 +30,7 @@ public sealed class PostingOptions
         "friendly nudge",
         "analysis-focused",
         "race day mood",
-        "last-call before first start"
+        "last-call before first start",
     ];
 
     public void Validate()
@@ -47,7 +42,9 @@ public sealed class PostingOptions
 
         if (MaximumDelay < MinimumDelay)
         {
-            throw new InvalidOperationException("Posting:MaximumDelay must be greater than or equal to Posting:MinimumDelay.");
+            throw new InvalidOperationException(
+                "Posting:MaximumDelay must be greater than or equal to Posting:MinimumDelay."
+            );
         }
 
         if (RetryDelay < TimeSpan.Zero)

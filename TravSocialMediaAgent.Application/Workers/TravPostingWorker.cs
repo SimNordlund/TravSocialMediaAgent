@@ -9,22 +9,23 @@ internal sealed class TravPostingWorker(
     IPostContentGenerator postContentGenerator,
     ISocialPostPublisher socialPostPublisher,
     PostingOptions postingOptions,
-    ILogger<TravPostingWorker> logger) : BackgroundService
+    ILogger<TravPostingWorker> logger
+) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (postingOptions.DryRun)
         {
-            logger.LogWarning("Posting:DryRun is enabled. Generated posts will be logged but not published to Facebook.");
+            logger.LogWarning(
+                "Posting:DryRun is enabled. Generated posts will be logged but not published to Facebook."
+            );
         }
 
         var firstRun = true;
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            var delay = firstRun && postingOptions.PostOnStartup
-                ? TimeSpan.Zero
-                : GetRandomDelay();
+            var delay = firstRun && postingOptions.PostOnStartup ? TimeSpan.Zero : GetRandomDelay();
 
             firstRun = false;
 
@@ -36,9 +37,16 @@ internal sealed class TravPostingWorker(
 
             var published = await TryPublishOnceAsync(stoppingToken);
 
-            if (!published && postingOptions.RetryDelay > TimeSpan.Zero && !stoppingToken.IsCancellationRequested)
+            if (
+                !published
+                && postingOptions.RetryDelay > TimeSpan.Zero
+                && !stoppingToken.IsCancellationRequested
+            )
             {
-                logger.LogInformation("Waiting {RetryDelay} before continuing after failed publish attempt.", postingOptions.RetryDelay);
+                logger.LogInformation(
+                    "Waiting {RetryDelay} before continuing after failed publish attempt.",
+                    postingOptions.RetryDelay
+                );
                 await Task.Delay(postingOptions.RetryDelay, stoppingToken);
             }
         }
@@ -67,7 +75,10 @@ internal sealed class TravPostingWorker(
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Failed to generate or publish the Travanalys Facebook post.");
+            logger.LogError(
+                exception,
+                "Failed to generate or publish the Travanalys Facebook post."
+            );
             return false;
         }
     }
@@ -82,6 +93,8 @@ internal sealed class TravPostingWorker(
             return postingOptions.MinimumDelay;
         }
 
-        return TimeSpan.FromMilliseconds(Random.Shared.NextInt64(minimumMilliseconds, maximumMilliseconds + 1));
+        return TimeSpan.FromMilliseconds(
+            Random.Shared.NextInt64(minimumMilliseconds, maximumMilliseconds + 1)
+        );
     }
 }
