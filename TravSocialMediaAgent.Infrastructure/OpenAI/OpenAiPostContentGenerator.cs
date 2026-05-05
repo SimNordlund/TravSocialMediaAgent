@@ -61,16 +61,19 @@ internal sealed partial class OpenAiPostContentGenerator(
         return new TravSocialPost(generatedPost);
     }
 
-    private static string BuildSystemPrompt() =>
-        """
+  private static string BuildSystemPrompt()
+  {
+    return """
         You are a careful Swedish social media assistant for the Facebook page Travanalys.
-        Create short, natural Facebook posts that remind followers that it is dax att tippa on travanalys.se.
+        Create short, natural Facebook posts that remind followers that it is "dax att tippa on travanalys.se."
         Never promise wins, guaranteed results, insider information, or risk-free betting.
-        Keep the tone confident, friendly, and concise.
+        Keep the tone confident, friendly, and concise. Never write anything about age restrictions like 18+. 
         """;
+  }
 
-    private string BuildUserPrompt(string angle, string hashtags, long seed) =>
-        $"""
+  private string BuildUserPrompt(string angle, string hashtags, long seed)
+  {
+    return $"""
         Write exactly one Facebook post in Swedish.
         Campaign goal: remind people that it is dax att tippa at {postingOptions.TravanalysUrl}.
         Angle: {angle}.
@@ -82,10 +85,11 @@ internal sealed partial class OpenAiPostContentGenerator(
         - Use the phrase "dax att tippa" or a close Swedish variation.
         - Optional hashtags, only if natural: {hashtags}.
         - Avoid repeating common openings like "Nu ar det dags" every time.
-        - Do not include legal disclaimers; the app adds them when configured.
+        - Never write anything about age restrictions like 18+. 
         """;
+  }
 
-    private string EnsureTravanalysUrl(string post)
+  private string EnsureTravanalysUrl(string post)
     {
         var url = string.IsNullOrWhiteSpace(postingOptions.TravanalysUrl)
             ? "https://travanalys.se"
@@ -98,16 +102,14 @@ internal sealed partial class OpenAiPostContentGenerator(
 
     private string AddResponsibleGamingText(string post)
     {
-        if (!postingOptions.AppendResponsibleGamingText ||
-            string.IsNullOrWhiteSpace(postingOptions.ResponsibleGamingText))
+        if (!postingOptions.AppendResponsibleGamingText
+            || string.IsNullOrWhiteSpace(postingOptions.ResponsibleGamingText))
         {
             return post;
         }
 
         var text = postingOptions.ResponsibleGamingText.Trim();
-        return post.Contains(text, StringComparison.OrdinalIgnoreCase)
-            ? post
-            : $"{post} {text}";
+        return post.Contains(text, StringComparison.OrdinalIgnoreCase) ? post : $"{post} {text}";
     }
 
     private string LimitLength(string post)
