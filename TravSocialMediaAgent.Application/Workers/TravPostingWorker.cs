@@ -58,6 +58,12 @@ internal sealed class TravPostingWorker(
         {
             var post = await postContentGenerator.GenerateAsync(cancellationToken);
 
+            if (post is null)
+            {
+                logger.LogInformation("No Travanalys post was generated. Facebook publish skipped.");
+                return true;
+            }
+
             if (postingOptions.DryRun)
             {
                 logger.LogInformation("Dry-run Travanalys Facebook post: {Post}", post.Message);

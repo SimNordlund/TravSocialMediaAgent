@@ -4,5 +4,5 @@ namespace TravSocialMediaAgent.Application.Abstractions;
 
 public interface IPostContentGenerator
 {
-    Task<TravSocialPost> GenerateAsync(CancellationToken cancellationToken);
+    Task<TravSocialPost?> GenerateAsync(CancellationToken cancellationToken);
 }

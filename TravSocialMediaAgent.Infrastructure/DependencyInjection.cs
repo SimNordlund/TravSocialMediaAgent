@@ -6,6 +6,7 @@ using TravSocialMediaAgent.Infrastructure.Facebook;
 using TravSocialMediaAgent.Infrastructure.OpenAI;
 using TravSocialMediaAgent.Infrastructure.Options;
 using TravSocialMediaAgent.Infrastructure.Shared;
+using TravSocialMediaAgent.Infrastructure.Travolta;
 
 namespace TravSocialMediaAgent.Infrastructure;
 
@@ -15,14 +16,22 @@ public static class DependencyInjection
     {
         var aiOptions = LoadAiOptions(configuration);
         var facebookOptions = LoadFacebookOptions(configuration);
+        var travoltaTopByDayOptions = LoadTravoltaTopByDayOptions(configuration);
 
         services.AddSingleton(aiOptions);
         services.AddSingleton(facebookOptions);
+        services.AddSingleton(travoltaTopByDayOptions);
 
         services.AddSingleton<OpenAiChatClientFactory>();
         services.AddSingleton<IChatClient>(serviceProvider =>
             serviceProvider.GetRequiredService<OpenAiChatClientFactory>().Create());
         services.AddSingleton<IPostContentGenerator, OpenAiPostContentGenerator>();
+
+        services.AddHttpClient<TravoltaTopByDayClient>((serviceProvider, httpClient) =>
+        {
+            var options = serviceProvider.GetRequiredService<TravoltaTopByDayOptions>();
+            httpClient.BaseAddress = new Uri($"{options.BaseUrl.TrimEnd('/')}/");
+        });
 
         services.AddHttpClient<ISocialPostPublisher, FacebookPagePublisher>((serviceProvider, httpClient) =>
         {
@@ -55,6 +64,15 @@ public static class DependencyInjection
             options.PageAccessToken,
             Environment.GetEnvironmentVariable("FACEBOOK_PAGE_ACCESS_TOKEN"));
 
+        return options;
+    }
+
+    private static TravoltaTopByDayOptions LoadTravoltaTopByDayOptions(IConfiguration configuration)
+    {
+        var options = configuration.GetSection(TravoltaTopByDayOptions.SectionName).Get<TravoltaTopByDayOptions>()
+            ?? new TravoltaTopByDayOptions();
+
+        options.Validate();
         return options;
     }
 }
