@@ -9,6 +9,7 @@ internal sealed class TravPostingWorker(
     IPostContentGenerator postContentGenerator,
     ISocialPostPublisher socialPostPublisher,
     PostingOptions postingOptions,
+    IHostApplicationLifetime applicationLifetime,
     ILogger<TravPostingWorker> logger
 ) : BackgroundService
 {
@@ -25,7 +26,9 @@ internal sealed class TravPostingWorker(
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            var delay = firstRun && postingOptions.PostOnStartup ? TimeSpan.Zero : GetRandomDelay();
+            var delay = firstRun && (postingOptions.PostOnStartup || postingOptions.RunOnce)
+                ? TimeSpan.Zero
+                : GetRandomDelay();
 
             firstRun = false;
 
@@ -36,6 +39,15 @@ internal sealed class TravPostingWorker(
             }
 
             var published = await TryPublishOnceAsync(stoppingToken);
+
+            if (postingOptions.RunOnce)
+            {
+                logger.LogInformation(
+                    "Posting:RunOnce is enabled. Startup posting completed; stopping the application."
+                );
+                applicationLifetime.StopApplication();
+                return;
+            }
 
             if (
                 !published

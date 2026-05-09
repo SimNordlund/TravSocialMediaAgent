@@ -8,6 +8,8 @@ public sealed class PostingOptions
 
     public bool PostOnStartup { get; set; }
 
+    public bool RunOnce { get; set; }
+
     public TimeSpan MinimumDelay { get; set; } = TimeSpan.FromHours(4);
 
     public TimeSpan MaximumDelay { get; set; } = TimeSpan.FromHours(8);
