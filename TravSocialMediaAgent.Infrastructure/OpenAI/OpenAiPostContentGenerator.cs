@@ -17,7 +17,8 @@ internal sealed partial class OpenAiPostContentGenerator(
     PostingOptions postingOptions,
     TravoltaTopByDayOptions travoltaTopByDayOptions,
     TravoltaTopByDayClient travoltaTopByDayClient,
-    ILogger<OpenAiPostContentGenerator> logger) : IPostContentGenerator
+    ILogger<OpenAiPostContentGenerator> logger
+) : IPostContentGenerator
 {
     private const int RecentPostLimit = 20;
 
@@ -42,7 +43,7 @@ internal sealed partial class OpenAiPostContentGenerator(
         ChatMessage[] messages =
         [
             new(ChatRole.System, BuildSystemPrompt()),
-            new(ChatRole.User, userPrompt)
+            new(ChatRole.User, userPrompt),
         ];
 
         var chatOptions = new ChatOptions
@@ -50,7 +51,7 @@ internal sealed partial class OpenAiPostContentGenerator(
             Temperature = aiOptions.Temperature,
             TopP = aiOptions.TopP,
             MaxOutputTokens = aiOptions.MaxOutputTokens,
-            Seed = seed
+            Seed = seed,
         };
 
         var response = await chatClient.GetResponseAsync(messages, chatOptions, cancellationToken);
@@ -58,13 +59,18 @@ internal sealed partial class OpenAiPostContentGenerator(
 
         if (string.IsNullOrWhiteSpace(generatedPost))
         {
-            logger.LogWarning("AI returned an empty post. Falling back to a local Travanalys template.");
-            generatedPost = topByDay is null ? BuildFallbackPost() : BuildTopByDayFallbackIntro(topByDay);
+            logger.LogWarning(
+                "AI returned an empty post. Falling back to a local Travanalys template."
+            );
+            generatedPost = topByDay is null
+                ? BuildFallbackPost()
+                : BuildTopByDayFallbackIntro(topByDay);
         }
 
         if (topByDay is not null)
         {
-            generatedPost = $"{generatedPost}{Environment.NewLine}{Environment.NewLine}{BuildTopByDayBlock(topByDay)}";
+            generatedPost =
+                $"{generatedPost}{Environment.NewLine}{Environment.NewLine}{BuildTopByDayBlock(topByDay)}";
         }
 
         generatedPost = EnsureTravanalysUrl(generatedPost);
@@ -72,14 +78,22 @@ internal sealed partial class OpenAiPostContentGenerator(
         generatedPost = AddResponsibleGamingText(generatedPost);
         generatedPost = LimitLength(generatedPost);
 
-        if (_recentPosts.Any(previous => string.Equals(previous, generatedPost, StringComparison.OrdinalIgnoreCase)))
+        if (
+            _recentPosts.Any(previous =>
+                string.Equals(previous, generatedPost, StringComparison.OrdinalIgnoreCase)
+            )
+        )
         {
-            logger.LogWarning("AI generated a duplicate post. Falling back to a local Travanalys template.");
+            logger.LogWarning(
+                "AI generated a duplicate post. Falling back to a local Travanalys template."
+            );
             var fallbackPost = topByDay is null
                 ? BuildFallbackPost()
                 : $"{BuildTopByDayFallbackIntro(topByDay)}{Environment.NewLine}{Environment.NewLine}{BuildTopByDayBlock(topByDay)}";
 
-            generatedPost = LimitLength(AddResponsibleGamingText(AddAndelsspelLink(EnsureTravanalysUrl(fallbackPost))));
+            generatedPost = LimitLength(
+                AddResponsibleGamingText(AddAndelsspelLink(EnsureTravanalysUrl(fallbackPost)))
+            );
         }
 
         Remember(generatedPost);
@@ -101,7 +115,8 @@ internal sealed partial class OpenAiPostContentGenerator(
                 "No Travolta top-by-day data found for {Form} at {Track} on {Date}. Facebook publish will be skipped.",
                 travoltaTopByDayOptions.Form,
                 travoltaTopByDayOptions.Track,
-                travoltaTopByDayOptions.ResolveDate());
+                travoltaTopByDayOptions.ResolveDate()
+            );
 
             return null;
         }
@@ -112,29 +127,29 @@ internal sealed partial class OpenAiPostContentGenerator(
     private static string BuildSystemPrompt()
     {
         return """
-        You are a careful Swedish social media assistant for the Facebook page Travanalys.
-        Create short, natural Facebook posts with playful racing language and varied openings.
-        Never promise wins, guaranteed results, insider information, or risk-free betting.
-        Keep the tone confident, friendly, and concise. Never write anything about age restrictions like 18+. 
-        """;
+            You are a careful Swedish social media assistant for the Facebook page Travanalys.
+            Create short, natural Facebook posts with playful racing language and varied openings.
+            Never promise wins, guaranteed results, insider information, or risk-free betting.
+            Keep the tone confident, friendly, and concise. Never write anything about age restrictions like 18+. 
+            """;
     }
 
     private string BuildUserPrompt(string angle, string hashtags, long seed)
     {
         return $"""
-        Write exactly one Facebook post in Swedish.
-        Campaign goal: invite people to check today's Travanalys thoughts at {postingOptions.TravanalysUrl}.
-        Angle: {angle}.
-        Random seed: {seed}.
-        Format rules:
-        - 1 to 3 short sentences.
-        - No headline, no markdown, no quotation marks.
-        - Mention Travanalys or travanalys.se once.
-        - Do not use the phrase "dax att tippa", "dags att tippa", or close variations.
-        - Optional hashtags, only if natural: {hashtags}.
-        - Avoid repeating common openings like "Nu ar det dags" every time.
-        - Never write anything about age restrictions like 18+. 
-        """;
+            Write exactly one Facebook post in Swedish.
+            Campaign goal: invite people to check today's Travanalys thoughts at {postingOptions.TravanalysUrl}.
+            Angle: {angle}.
+            Random seed: {seed}.
+            Format rules:
+            - 1 to 3 short sentences.
+            - No headline, no markdown, no quotation marks.
+            - Mention Travanalys or travanalys.se once.
+            - Do not use the phrase "dax att tippa", "dags att tippa", or close variations.
+            - Optional hashtags, only if natural: {hashtags}.
+            - Avoid repeating common openings like "Nu ar det dags" every time.
+            - Never write anything about age restrictions like 18+. 
+            """;
     }
 
     private string BuildTopByDayIntroPrompt(TopByDayResponse response, string angle, long seed)
@@ -144,26 +159,26 @@ internal sealed partial class OpenAiPostContentGenerator(
         var form = FirstNonWhiteSpace(response.Form, travoltaTopByDayOptions.Form);
 
         return $"""
-        Write exactly one short, funny opening sentence in Swedish for a Facebook post.
-        The app will append a fixed race list after your sentence.
-        Campaign goal: make the reader curious about today's Travanalys list.
-        Context: top {travoltaTopByDayOptions.TopN} horses by regular Analys for {form} at {track} on {date}.
-        Angle: {angle}.
-        Random seed: {seed}.
-        Format rules:
-        - One sentence only.
-        - Mention {form} på {track} naturally in the sentence.
-        - Start with a playful joke, racing pun, or local track reference.
-        - Be varied; do not reuse the same opening structure between posts.
-        - Do not use the phrase "dax att tippa", "dags att tippa", or close variations.
-        - No horse names, horse numbers, rankings, analysis percentages, hashtags, markdown, or quotation marks.
-        - Do not joke at the expense of protected groups, nationalities, or private people.
-        - Never promise wins, guaranteed results, insider information, or risk-free betting.
-        - Never write anything about age restrictions like 18+.
-        Style examples, do not copy exactly:
-        - Nu letar vi skrällar på {form} {track} - kupongen ska få jobba.
-        - Spikarna slipas inför {form} på {track}, och staketet får hålla i sig.
-        """;
+            Write exactly one short, funny opening sentence in Swedish for a Facebook post.
+            The app will append a fixed race list after your sentence.
+            Campaign goal: make the reader curious about today's Travanalys list.
+            Context: top {travoltaTopByDayOptions.TopN} horses by regular Analys for {form} at {track} on {date}.
+            Angle: {angle}.
+            Random seed: {seed}.
+            Format rules:
+            - One sentence only.
+            - Mention {form} på {track} naturally in the sentence.
+            - Start with a playful joke, racing pun, or local track reference.
+            - Be varied; do not reuse the same opening structure between posts.
+            - Do not use the phrase "dax att tippa", "dags att tippa", or close variations.
+            - No horse names, horse numbers, rankings, analysis percentages, hashtags, markdown, or quotation marks.
+            - Do not joke at the expense of protected groups, nationalities, or private people.
+            - Never promise wins, guaranteed results, insider information, or risk-free betting.
+            - Never write anything about age restrictions like 18+.
+            Style examples, do not copy exactly:
+            - Nu letar vi skrällar på {form} {track} - kupongen ska få jobba.
+            - Spikarna slipas inför {form} på {track}, och staketet får hålla i sig.
+            """;
     }
 
     private string EnsureTravanalysUrl(string post)
@@ -199,11 +214,7 @@ internal sealed partial class OpenAiPostContentGenerator(
 
         foreach (var race in response.Races)
         {
-            builder
-                .Append(raceLabel)
-                .Append(' ')
-                .Append(FormatLopp(race.DisplayLopp))
-                .AppendLine();
+            builder.Append(raceLabel).Append(' ').Append(FormatLopp(race.DisplayLopp)).AppendLine();
 
             foreach (var horse in race.Top.Take(travoltaTopByDayOptions.TopN))
             {
@@ -227,8 +238,10 @@ internal sealed partial class OpenAiPostContentGenerator(
 
     private string AddResponsibleGamingText(string post)
     {
-        if (!postingOptions.AppendResponsibleGamingText
-            || string.IsNullOrWhiteSpace(postingOptions.ResponsibleGamingText))
+        if (
+            !postingOptions.AppendResponsibleGamingText
+            || string.IsNullOrWhiteSpace(postingOptions.ResponsibleGamingText)
+        )
         {
             return post;
         }
@@ -276,7 +289,7 @@ internal sealed partial class OpenAiPostContentGenerator(
         {
             "Travdag p\u00e5 g\u00e5ng och kupongen beh\u00f6ver lite syre. Kolla l\u00e4get hos Travanalys p\u00e5 travanalys.se",
             "Spikarna \u00e4r framme och skr\u00e4llklockan ringer. Travanalys har dagens uppl\u00e4gg p\u00e5 travanalys.se",
-            "Innan loppen drar ig\u00e5ng: ta en titt hos Travanalys och l\u00e4gg ditt tips p\u00e5 travanalys.se"
+            "Innan loppen drar ig\u00e5ng: ta en titt hos Travanalys och l\u00e4gg ditt tips p\u00e5 travanalys.se",
         };
 
         return Pick(templates, templates[0]);

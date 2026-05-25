@@ -5,9 +5,7 @@ using TravSocialMediaAgent.Infrastructure.Options;
 
 namespace TravSocialMediaAgent.Infrastructure.Travolta;
 
-internal sealed class TravoltaTopByDayClient(
-    HttpClient httpClient,
-    TravoltaTopByDayOptions options)
+internal sealed class TravoltaTopByDayClient(HttpClient httpClient, TravoltaTopByDayOptions options)
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
