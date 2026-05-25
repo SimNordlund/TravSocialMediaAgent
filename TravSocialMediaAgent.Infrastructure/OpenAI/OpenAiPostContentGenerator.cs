@@ -113,7 +113,7 @@ internal sealed partial class OpenAiPostContentGenerator(
     {
         return """
         You are a careful Swedish social media assistant for the Facebook page Travanalys.
-        Create short, natural Facebook posts that remind followers that it is "dax att tippa on travanalys.se."
+        Create short, natural Facebook posts with playful racing language and varied openings.
         Never promise wins, guaranteed results, insider information, or risk-free betting.
         Keep the tone confident, friendly, and concise. Never write anything about age restrictions like 18+. 
         """;
@@ -123,14 +123,14 @@ internal sealed partial class OpenAiPostContentGenerator(
     {
         return $"""
         Write exactly one Facebook post in Swedish.
-        Campaign goal: remind people that it is dax att tippa at {postingOptions.TravanalysUrl}.
+        Campaign goal: invite people to check today's Travanalys thoughts at {postingOptions.TravanalysUrl}.
         Angle: {angle}.
         Random seed: {seed}.
         Format rules:
         - 1 to 3 short sentences.
         - No headline, no markdown, no quotation marks.
         - Mention Travanalys or travanalys.se once.
-        - Use the phrase "dax att tippa" or a close Swedish variation.
+        - Do not use the phrase "dax att tippa", "dags att tippa", or close variations.
         - Optional hashtags, only if natural: {hashtags}.
         - Avoid repeating common openings like "Nu ar det dags" every time.
         - Never write anything about age restrictions like 18+. 
@@ -144,19 +144,25 @@ internal sealed partial class OpenAiPostContentGenerator(
         var form = FirstNonWhiteSpace(response.Form, travoltaTopByDayOptions.Form);
 
         return $"""
-        Write exactly one short opening sentence in Swedish for a Facebook post.
+        Write exactly one short, funny opening sentence in Swedish for a Facebook post.
         The app will append a fixed race list after your sentence.
-        Campaign goal: remind people that it is dax att tippa at {postingOptions.TravanalysUrl}.
+        Campaign goal: make the reader curious about today's Travanalys list.
         Context: top {travoltaTopByDayOptions.TopN} horses by regular Analys for {form} at {track} on {date}.
         Angle: {angle}.
         Random seed: {seed}.
         Format rules:
         - One sentence only.
-        - Mention Travanalys or travanalys.se once.
-        - Use the phrase "dax att tippa" or a close Swedish variation.
+        - Mention {form} på {track} naturally in the sentence.
+        - Start with a playful joke, racing pun, or local track reference.
+        - Be varied; do not reuse the same opening structure between posts.
+        - Do not use the phrase "dax att tippa", "dags att tippa", or close variations.
         - No horse names, horse numbers, rankings, analysis percentages, hashtags, markdown, or quotation marks.
+        - Do not joke at the expense of protected groups, nationalities, or private people.
         - Never promise wins, guaranteed results, insider information, or risk-free betting.
         - Never write anything about age restrictions like 18+.
+        Style examples, do not copy exactly:
+        - Nu letar vi skrällar på {form} {track} - kupongen ska få jobba.
+        - Spikarna slipas inför {form} på {track}, och staketet får hålla i sig.
         """;
     }
 
@@ -268,8 +274,8 @@ internal sealed partial class OpenAiPostContentGenerator(
     {
         var templates = new[]
         {
-            "Travdag p\u00e5 g\u00e5ng och det \u00e4r dax att tippa hos Travanalys. Kolla l\u00e4get p\u00e5 travanalys.se",
-            "Dax att tippa? Travanalys har dagens uppl\u00e4gg redo p\u00e5 travanalys.se",
+            "Travdag p\u00e5 g\u00e5ng och kupongen beh\u00f6ver lite syre. Kolla l\u00e4get hos Travanalys p\u00e5 travanalys.se",
+            "Spikarna \u00e4r framme och skr\u00e4llklockan ringer. Travanalys har dagens uppl\u00e4gg p\u00e5 travanalys.se",
             "Innan loppen drar ig\u00e5ng: ta en titt hos Travanalys och l\u00e4gg ditt tips p\u00e5 travanalys.se"
         };
 
@@ -281,7 +287,7 @@ internal sealed partial class OpenAiPostContentGenerator(
         var form = FirstNonWhiteSpace(response.Form, travoltaTopByDayOptions.Form);
         var track = FirstNonWhiteSpace(response.Track, travoltaTopByDayOptions.Track);
 
-        return $"Dax att tippa? H\u00e4r \u00e4r Travanalys topp {travoltaTopByDayOptions.TopN} f\u00f6r {form} p\u00e5 {track} p\u00e5 travanalys.se.";
+        return $"Spikarna slipas och skr\u00e4llarna v\u00e4rmer upp inf\u00f6r {form} p\u00e5 {track}.";
     }
 
     private void Remember(string post)
