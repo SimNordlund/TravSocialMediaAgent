@@ -10,7 +10,7 @@ internal sealed class TravoltaTopByDayClient(HttpClient httpClient, TravoltaTopB
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
     };
 
     public async Task<TopByDayResponse?> GetAsync(CancellationToken cancellationToken)
@@ -33,7 +33,8 @@ internal sealed class TravoltaTopByDayClient(HttpClient httpClient, TravoltaTopB
         if (!response.IsSuccessStatusCode)
         {
             throw new InvalidOperationException(
-                $"Travolta Top By Day API returned {(int)response.StatusCode} {response.ReasonPhrase}: {content}");
+                $"Travolta Top By Day API returned {(int)response.StatusCode} {response.ReasonPhrase}: {content}"
+            );
         }
 
         return JsonSerializer.Deserialize<TopByDayResponse>(content, JsonOptions);

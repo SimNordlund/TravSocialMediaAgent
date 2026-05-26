@@ -46,7 +46,9 @@ public static class DependencyInjection
 
     private static AiOptions LoadAiOptions(IConfiguration configuration)
     {
-        var options = configuration.GetSection(AiOptions.SectionName).Get<AiOptions>() ?? new AiOptions();
+        var options = configuration
+        .GetSection(AiOptions.SectionName)
+        .Get<AiOptions>() ?? new AiOptions();
         options.ApiKey = ConfigurationValue.FirstNonWhiteSpace(
             options.ApiKey,
             Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
@@ -56,7 +58,9 @@ public static class DependencyInjection
 
     private static FacebookOptions LoadFacebookOptions(IConfiguration configuration)
     {
-        var options = configuration.GetSection(FacebookOptions.SectionName).Get<FacebookOptions>() ?? new FacebookOptions();
+        var options = configuration
+            .GetSection(FacebookOptions.SectionName)
+            .Get<FacebookOptions>() ?? new FacebookOptions();
         options.PageId = ConfigurationValue.FirstNonWhiteSpace(
             options.PageId,
             Environment.GetEnvironmentVariable("FACEBOOK_PAGE_ID"));
