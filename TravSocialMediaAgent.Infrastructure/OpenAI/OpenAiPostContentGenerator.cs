@@ -178,6 +178,7 @@ internal sealed partial class OpenAiPostContentGenerator(
             Style examples, do not copy exactly:
             - Nu letar vi skrällar på {form} {track} - kupongen ska få jobba.
             - Spikarna slipas inför {form} på {track}, och staketet får hålla i sig.
+            - Nu spränger vi Bjerke!
             """;
     }
 
